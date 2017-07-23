@@ -19,31 +19,33 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.gmail.socraticphoenix.gold.common.proto.program;
+package com.gmail.socraticphoenix.gold.gui;
 
-import com.gmail.socraticphoenix.gold.program.value.DataType;
-import com.gmail.socraticphoenix.gold.program.value.DataTypeRegistry;
-import com.gmail.socraticphoenix.gold.program.value.MemoryOnlyDataType;
-import com.gmail.socraticphoenix.gold.program.value.NamedDataType;
-import com.gmail.socraticphoenix.gold.program.value.Value;
-import com.gmail.socraticphoenix.parse.CharacterStream;
-import com.gmail.socraticphoenix.parse.parser.PatternRestriction;
-import com.gmail.socraticphoenix.parse.parser.PatternResult;
+import com.gmail.socraticphoenix.gold.ast.Loc;
 
-public class ObjectDataType extends NamedDataType implements MemoryOnlyDataType {
+public class LocRange {
+    private Loc start;
+    private Loc end;
 
-    public ObjectDataType(String name) {
-        super(name);
+    public LocRange(Loc start, Loc end) {
+        this.start = start;
+        this.end = end;
     }
 
-    @Override
-    public boolean canCast(Value value, DataType other, DataTypeRegistry registry) {
-        return false;
+    public Loc getStart() {
+        return this.start;
     }
 
-    @Override
-    public Value cast(Value value, DataType other, DataTypeRegistry registry) {
-        return null;
+    public void setStart(Loc start) {
+        this.start = start;
+    }
+
+    public Loc getEnd() {
+        return this.end;
+    }
+
+    public void setEnd(Loc end) {
+        this.end = end;
     }
 
 }

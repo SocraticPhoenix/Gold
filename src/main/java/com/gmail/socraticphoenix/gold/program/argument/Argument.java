@@ -55,10 +55,10 @@ public class Argument<T extends Memory> {
 
     public static <T extends Memory> Switch<Map<String, Value>, String> get(List<Argument<T>> args, T memory, DataTypeRegistry registry, ProgramContext<T> context) {
         Map<String, Value> mp = new LinkedHashMap<>();
-        for(Argument<T> arg : args) {
+        for (Argument<T> arg : args) {
             context.check();
             Switch<Value, String> get = arg.getMatchAndProcess(memory, registry);
-            if(get.containsB()) {
+            if (get.containsB()) {
                 return Switch.ofB(get.getB().get());
             } else {
                 mp.put(arg.getName(), get.getA().get());
@@ -152,15 +152,18 @@ public class Argument<T extends Memory> {
 
     public Value apply(Value value, DataTypeRegistry registry) {
         DataType target = null;
-        for (DataType type : this.types) {
-            if (this.allowCasting && value.canCast(type, registry) && target == null) {
-                target = type;
-            } else if (value.getType().equals(type)) {
-                target = type;
-                break;
+        if (this.types.length == 0) {
+            target = value.getType();
+        } else {
+            for (DataType type : this.types) {
+                if (this.allowCasting && value.canCast(type, registry) && target == null) {
+                    target = type;
+                } else if (value.getType().equals(type)) {
+                    target = type;
+                    break;
+                }
             }
         }
-
         return this.preProcessor.apply(value.cast(target, registry));
     }
 

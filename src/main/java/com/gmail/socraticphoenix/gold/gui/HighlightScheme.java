@@ -19,31 +19,39 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.gmail.socraticphoenix.gold.common.proto.program;
+package com.gmail.socraticphoenix.gold.gui;
 
-import com.gmail.socraticphoenix.gold.program.value.DataType;
-import com.gmail.socraticphoenix.gold.program.value.DataTypeRegistry;
-import com.gmail.socraticphoenix.gold.program.value.MemoryOnlyDataType;
-import com.gmail.socraticphoenix.gold.program.value.NamedDataType;
-import com.gmail.socraticphoenix.gold.program.value.Value;
-import com.gmail.socraticphoenix.parse.CharacterStream;
-import com.gmail.socraticphoenix.parse.parser.PatternRestriction;
-import com.gmail.socraticphoenix.parse.parser.PatternResult;
+import java.awt.Color;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
-public class ObjectDataType extends NamedDataType implements MemoryOnlyDataType {
+public class HighlightScheme {
+    public static final String INSTRUCTION = "highlight.instruction";
+    public static final String BLOCK = "highlight.block";
+    public static final String VALUE = "highlight.value";
+    public static final String NORMAL = "highlight.normal";
+    public static final String ERROR = "highlight.normal";
 
-    public ObjectDataType(String name) {
-        super(name);
+    private Map<String, HighlightFormat> highlights;
+
+    public HighlightScheme() {
+        this.highlights = new LinkedHashMap<>();
     }
 
-    @Override
-    public boolean canCast(Value value, DataType other, DataTypeRegistry registry) {
-        return false;
+    public boolean has(String key) {
+        return this.highlights.containsKey(key);
     }
 
-    @Override
-    public Value cast(Value value, DataType other, DataTypeRegistry registry) {
-        return null;
+    public HighlightFormat getHighlight(String key, HighlightFormat def) {
+        return this.highlights.getOrDefault(key, def);
+    }
+
+    public void setHighlight(String key, HighlightFormat def) {
+        this.highlights.put(key, def);
+    }
+
+    public HighlightFormat getHighlight(String key) {
+        return this.highlights.get(key);
     }
 
 }

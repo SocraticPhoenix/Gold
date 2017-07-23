@@ -24,6 +24,7 @@ package com.gmail.socraticphoenix.gold.common.proto.parser;
 import com.gmail.socraticphoenix.collect.Items;
 import com.gmail.socraticphoenix.gold.parser.BlockParserComponent;
 import com.gmail.socraticphoenix.gold.parser.ChoosingParserComponent;
+import com.gmail.socraticphoenix.gold.parser.FullMatchParserComponent;
 import com.gmail.socraticphoenix.gold.parser.LazyParserComponent;
 import com.gmail.socraticphoenix.gold.parser.Parser;
 import com.gmail.socraticphoenix.gold.parser.ParserComponent;
@@ -61,7 +62,7 @@ public interface CommonParsers {
         ParserComponent<T> simpleSequence = new RepeatingParserComponent<>(new ChoosingParserComponent<>(Items.buildList(values, instructions, blocks)));
         sequence.set(simpleSequence);
 
-        return new Parser<>(Items.buildList(simpleSequence));
+        return new Parser<>(Items.buildList(new FullMatchParserComponent<>(simpleSequence)));
     }
 
 }

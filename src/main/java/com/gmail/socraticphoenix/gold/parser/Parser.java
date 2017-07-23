@@ -25,18 +25,23 @@ import com.gmail.socraticphoenix.collect.Items;
 import com.gmail.socraticphoenix.gold.ast.Loc;
 import com.gmail.socraticphoenix.gold.ast.Node;
 import com.gmail.socraticphoenix.gold.ast.SequenceNode;
+import com.gmail.socraticphoenix.gold.gui.HighLightInformation;
+import com.gmail.socraticphoenix.gold.gui.HighlightFormat;
+import com.gmail.socraticphoenix.gold.gui.HighlightScheme;
+import com.gmail.socraticphoenix.gold.gui.LocRange;
 import com.gmail.socraticphoenix.gold.program.Function;
 import com.gmail.socraticphoenix.gold.program.Program;
 import com.gmail.socraticphoenix.gold.program.memory.Memory;
 import com.gmail.socraticphoenix.parse.CharacterStream;
 
+import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Parser<T extends Memory>{
+public class Parser<T extends Memory> {
     private List<ParserComponent<T>> sequence;
 
     public Parser(List<ParserComponent<T>> sequence) {
@@ -48,8 +53,8 @@ public class Parser<T extends Memory>{
         Loc[] locMap = buildLocMap(str);
         CharacterStream stream = new CharacterStream(str);
         List<SequenceNode<T>> nodes = new ArrayList<>();
-        for(ParserComponent<T> component : this.sequence) {
-            if(!stream.hasNext() || !component.isNext(stream, locMap)) {
+        for (ParserComponent<T> component : this.sequence) {
+            if (!stream.hasNext() || !component.isNext(stream, locMap)) {
                 throw new GoldParserError("Unrecognized string", locMap[stream.index()]);
             } else {
                 Loc loc = locMap[stream.index()];
@@ -60,21 +65,55 @@ public class Parser<T extends Memory>{
         return nodes;
     }
 
+    public HighLightInformation highlight(String str, HighlightScheme scheme) {
+        HighLightInformation information = new HighLightInformation();
+
+        str = clean(str);
+        Loc[] locMap = buildLocMap(str);
+        CharacterStream stream = new CharacterStream(str);
+        for (ParserComponent<T> component : this.sequence) {
+            if (!stream.hasNext() || !component.isNext(stream, locMap)) {
+                if (!stream.hasNext()) {
+                    information.addHighlight(new LocRange(locMap[stream.index()], locMap[stream.index()]), scheme.getHighlight(HighlightScheme.ERROR, new HighlightFormat(null, new Color(234, 0, 13), true, false)), "Unrecognized sequence");
+                    break;
+                } else {
+                    Loc left = locMap[stream.index()];
+                    while (stream.hasNext() && !component.isNext(stream, locMap)) {
+                        stream.next();
+                    }
+                    Loc right = locMap[stream.index()];
+                    information.addHighlight(new LocRange(left, right), scheme.getHighlight(HighlightScheme.ERROR, new HighlightFormat(null, new Color(234, 0, 13), true, false)), "Unrecognized sequence");
+                    if (!stream.hasNext()) {
+                        break;
+                    } else if (component.isNext(stream, locMap)) {
+                        component.highlight(stream, information, scheme, locMap);
+                    }
+                }
+            } else {
+                component.highlight(stream, information, scheme, locMap);
+            }
+        }
+
+        return information;
+    }
+
     private Loc[] buildLocMap(String str) {
-        Loc[] map = new Loc[str.length()];
+        Loc[] map = new Loc[str.length() + 1];
         //Yep, that's right, I'm building an array for every single character location in the string
         //deal with it
         int row = 0;
         int col = 0;
         int n = 0;
-        for(char c : str.toCharArray()) {
-            map[n++] = new Loc(col, row);
+        for (char c : str.toCharArray()) {
+            map[n] = new Loc(col, row, n);
+            n++;
             col++;
-            if(c == '\n') {
+            if (c == '\n') {
                 row++;
                 col = 0;
             }
         }
+        map[n] = new Loc(col, row, n); //EOF loc
         return map;
     }
 

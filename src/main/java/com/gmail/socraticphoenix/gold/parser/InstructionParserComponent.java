@@ -24,9 +24,15 @@ package com.gmail.socraticphoenix.gold.parser;
 import com.gmail.socraticphoenix.gold.ast.InstructionNode;
 import com.gmail.socraticphoenix.gold.ast.Loc;
 import com.gmail.socraticphoenix.gold.ast.Node;
+import com.gmail.socraticphoenix.gold.gui.HighLightInformation;
+import com.gmail.socraticphoenix.gold.gui.HighlightFormat;
+import com.gmail.socraticphoenix.gold.gui.HighlightScheme;
+import com.gmail.socraticphoenix.gold.gui.LocRange;
 import com.gmail.socraticphoenix.gold.program.Instruction;
 import com.gmail.socraticphoenix.gold.program.memory.Memory;
 import com.gmail.socraticphoenix.parse.CharacterStream;
+
+import java.awt.Color;
 
 public class InstructionParserComponent<T extends Memory> implements ParserComponent<T> {
     private Instruction<T> instruction;
@@ -45,6 +51,22 @@ public class InstructionParserComponent<T extends Memory> implements ParserCompo
         int ind = stream.index();
         stream.next(this.instruction.id());
         return new InstructionNode<>(locationMap[ind], this.instruction);
+    }
+
+    @Override
+    public void highlight(CharacterStream stream, HighLightInformation information, HighlightScheme scheme, Loc[] locationMap) {
+        if(this.isNext(stream, locationMap)) {
+            Loc left = locationMap[stream.index()];
+            stream.next(this.instruction.id());
+            Loc right = locationMap[stream.index()];
+            HighlightFormat format;
+            if(scheme.has("instruction." + this.instruction.name())) {
+                format = scheme.getHighlight("instruction." + this.instruction.name());
+            } else {
+                format = scheme.getHighlight(HighlightScheme.INSTRUCTION, new HighlightFormat(null, new Color(176, 84, 234), false, false));
+            }
+            information.addHighlight(new LocRange(left, right), format, this.instruction.help());
+        }
     }
 
 }

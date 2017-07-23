@@ -24,10 +24,16 @@ package com.gmail.socraticphoenix.gold.ast;
 public class Loc {
     private int col;
     private int row;
+    private int index;
 
-    public Loc(int col, int row) {
+    public Loc(int col, int row, int index) {
         this.col = col;
         this.row = row;
+        this.index = index;
+    }
+
+    public int getIndex() {
+        return this.index;
     }
 
     public int getCol() {

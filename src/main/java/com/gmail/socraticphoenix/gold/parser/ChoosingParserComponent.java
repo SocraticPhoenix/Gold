@@ -23,9 +23,14 @@ package com.gmail.socraticphoenix.gold.parser;
 
 import com.gmail.socraticphoenix.gold.ast.Loc;
 import com.gmail.socraticphoenix.gold.ast.Node;
+import com.gmail.socraticphoenix.gold.gui.HighLightInformation;
+import com.gmail.socraticphoenix.gold.gui.HighlightFormat;
+import com.gmail.socraticphoenix.gold.gui.HighlightScheme;
+import com.gmail.socraticphoenix.gold.gui.LocRange;
 import com.gmail.socraticphoenix.gold.program.memory.Memory;
 import com.gmail.socraticphoenix.parse.CharacterStream;
 
+import java.awt.Color;
 import java.util.List;
 
 public class ChoosingParserComponent<T extends Memory> implements ParserComponent<T> {
@@ -42,13 +47,42 @@ public class ChoosingParserComponent<T extends Memory> implements ParserComponen
 
     @Override
     public Node<T> next(CharacterStream stream, Loc[] locationMap) {
-        for(ParserComponent<T> choice : this.choices) {
-            if(choice.isNext(stream, locationMap)) {
+        for (ParserComponent<T> choice : this.choices) {
+            if (choice.isNext(stream, locationMap)) {
                 return choice.next(stream, locationMap);
             }
         }
 
         return null;
+    }
+
+    @Override
+    public void highlight(CharacterStream stream, HighLightInformation information, HighlightScheme scheme, Loc[] locationMap) {
+        if (this.isNext(stream, locationMap)) {
+            for (ParserComponent<T> choice : this.choices) {
+                if (choice.isNext(stream, locationMap)) {
+                    choice.highlight(stream, information, scheme, locationMap);
+                    break;
+                }
+            }
+            return;
+        }
+
+        Loc left = locationMap[stream.index()];
+        while (stream.hasNext() && !this.isNext(stream, locationMap)) {
+            stream.next();
+        }
+        Loc right = locationMap[stream.index()];
+        information.addHighlight(new LocRange(left, right), scheme.getHighlight(HighlightScheme.ERROR, new HighlightFormat(null, new Color(234, 0, 13), true, false)), "Unrecognized sequence");
+
+        if (stream.hasNext() && this.isNext(stream, locationMap)) {
+            for (ParserComponent<T> choice : this.choices) {
+                if (choice.isNext(stream, locationMap)) {
+                    choice.highlight(stream, information, scheme, locationMap);
+                    break;
+                }
+            }
+        }
     }
 
 }

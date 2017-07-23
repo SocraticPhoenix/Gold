@@ -19,31 +19,33 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.gmail.socraticphoenix.gold.common.proto.program;
+package com.gmail.socraticphoenix.gold.gui;
 
-import com.gmail.socraticphoenix.gold.program.value.DataType;
-import com.gmail.socraticphoenix.gold.program.value.DataTypeRegistry;
-import com.gmail.socraticphoenix.gold.program.value.MemoryOnlyDataType;
-import com.gmail.socraticphoenix.gold.program.value.NamedDataType;
-import com.gmail.socraticphoenix.gold.program.value.Value;
-import com.gmail.socraticphoenix.parse.CharacterStream;
-import com.gmail.socraticphoenix.parse.parser.PatternRestriction;
-import com.gmail.socraticphoenix.parse.parser.PatternResult;
+import com.gmail.socraticphoenix.collect.coupling.Pair;
+import com.gmail.socraticphoenix.collect.coupling.Triple;
 
-public class ObjectDataType extends NamedDataType implements MemoryOnlyDataType {
+import java.awt.Color;
+import java.util.ArrayList;
+import java.util.List;
 
-    public ObjectDataType(String name) {
-        super(name);
+public class HighLightInformation {
+    private List<Triple<LocRange, HighlightFormat, String>> highlights;
+
+    public HighLightInformation() {
+        this.highlights = new ArrayList<>();
     }
 
-    @Override
-    public boolean canCast(Value value, DataType other, DataTypeRegistry registry) {
-        return false;
+    public void addHighlight(LocRange range, HighlightFormat format) {
+        this.highlights.add(Triple.of(range, format, null));
     }
 
-    @Override
-    public Value cast(Value value, DataType other, DataTypeRegistry registry) {
-        return null;
+    public void addHighlight(LocRange range, HighlightFormat format, String tooltip) {
+        this.highlights.add(Triple.of(range, format, tooltip));
     }
+
+    public List<Triple<LocRange, HighlightFormat, String>> getHighlights() {
+        return this.highlights;
+    }
+
 
 }

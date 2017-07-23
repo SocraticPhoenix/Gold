@@ -26,10 +26,15 @@ import com.gmail.socraticphoenix.gold.ast.BlockNode;
 import com.gmail.socraticphoenix.gold.ast.Loc;
 import com.gmail.socraticphoenix.gold.ast.Node;
 import com.gmail.socraticphoenix.gold.ast.SequenceNode;
+import com.gmail.socraticphoenix.gold.gui.HighLightInformation;
+import com.gmail.socraticphoenix.gold.gui.HighlightFormat;
+import com.gmail.socraticphoenix.gold.gui.HighlightScheme;
+import com.gmail.socraticphoenix.gold.gui.LocRange;
 import com.gmail.socraticphoenix.gold.program.Block;
 import com.gmail.socraticphoenix.gold.program.memory.Memory;
 import com.gmail.socraticphoenix.parse.CharacterStream;
 
+import java.awt.Color;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -71,6 +76,53 @@ public class BlockParserComponent<T extends Memory> implements ParserComponent<T
         }
         stream.next(this.block.tags().get(partition));
         return new BlockNode<>(locationMap[loc], this.block, partitions);
+    }
+
+    @Override
+    public void highlight(CharacterStream stream, HighLightInformation information, HighlightScheme scheme, Loc[] locationMap) {
+        if(this.isNext(stream, locationMap)) {
+            HighlightFormat format;
+            if(scheme.has("block." + this.block.name())) {
+                format = scheme.getHighlight("block." + this.block.name());
+            } else {
+                format = scheme.getHighlight(HighlightScheme.BLOCK, new HighlightFormat(null, new Color(88, 0, 234), true, false));
+            }
+
+            Loc loc = locationMap[stream.index()];
+            String first = this.block.tags().get(0);
+            stream.next(first);
+            Loc nloc = locationMap[stream.index()];
+            information.addHighlight(new LocRange(loc, nloc), format, this.block.help());
+            this.get(first, locationMap, stream).highlight(stream, information, scheme, locationMap);
+            int partition = 1;
+            while (partition < this.block.tags().size() - 1) {
+                String nxtTag = this.block.tags().get(partition);
+                if(stream.isNext(nxtTag)) {
+                    Loc left = locationMap[stream.index()];
+                    stream.next(nxtTag);
+                    Loc right = locationMap[stream.index()];
+                    information.addHighlight(new LocRange(left, right), format, this.block.help());
+                    partition++;
+                    this.get(nxtTag, locationMap, stream).highlight(stream, information, scheme, locationMap);
+                } else if (this.optionalPartitions.contains(nxtTag)) {
+                    partition++;
+                } else {
+                    Loc left = locationMap[stream.index()];
+                    stream.nextUntil(nxtTag);
+                    Loc right = locationMap[stream.index()];
+                    information.addHighlight(new LocRange(left, right), scheme.getHighlight(HighlightScheme.ERROR, new HighlightFormat(null, new Color(234, 0, 13), true, false)), stream.isNext(nxtTag) ? "Unrecognized sequence" : "Expected non-optional block partition " + nxtTag);
+                    if(!stream.isNext(nxtTag)) {
+                        partition++;
+                    }
+                }
+            }
+            if(stream.isNext(this.block.tags().get(partition))) {
+                Loc left = locationMap[stream.index()];
+                stream.next(this.block.tags().get(partition));
+                Loc right = locationMap[stream.index()];
+                information.addHighlight(new LocRange(left, right), format, this.block.help());
+            }
+        }
     }
 
     private SequenceNode<T> sequence(Node<T> node) {

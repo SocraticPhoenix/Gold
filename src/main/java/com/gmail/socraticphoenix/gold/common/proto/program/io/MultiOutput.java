@@ -19,31 +19,45 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.gmail.socraticphoenix.gold.common.proto.program;
+package com.gmail.socraticphoenix.gold.common.proto.program.io;
 
-import com.gmail.socraticphoenix.gold.program.value.DataType;
-import com.gmail.socraticphoenix.gold.program.value.DataTypeRegistry;
-import com.gmail.socraticphoenix.gold.program.value.MemoryOnlyDataType;
-import com.gmail.socraticphoenix.gold.program.value.NamedDataType;
-import com.gmail.socraticphoenix.gold.program.value.Value;
-import com.gmail.socraticphoenix.parse.CharacterStream;
-import com.gmail.socraticphoenix.parse.parser.PatternRestriction;
-import com.gmail.socraticphoenix.parse.parser.PatternResult;
+import com.gmail.socraticphoenix.gold.program.io.Output;
 
-public class ObjectDataType extends NamedDataType implements MemoryOnlyDataType {
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
-    public ObjectDataType(String name) {
-        super(name);
+public class MultiOutput implements Output {
+    private List<Output> delegate;
+
+    public MultiOutput(List<Output> delegate) {
+        this.delegate = delegate;
+    }
+
+
+    @Override
+    public void publish(String info) {
+        this.delegate.forEach(o -> o.publish(info));
     }
 
     @Override
-    public boolean canCast(Value value, DataType other, DataTypeRegistry registry) {
-        return false;
-    }
+    public void close() throws IOException {
+        List<Throwable> exceptions = new ArrayList<>();
+        for(Output o : this.delegate) {
+            try {
+                o.close();
+            } catch (Throwable e) {
+                exceptions.add(e);
+            }
+        }
 
-    @Override
-    public Value cast(Value value, DataType other, DataTypeRegistry registry) {
-        return null;
+        if(!exceptions.isEmpty()) {
+            IOException exception = new IOException();
+            for(Throwable ex : exceptions) {
+                exception.addSuppressed(ex);
+            }
+            throw exception;
+        }
     }
 
 }

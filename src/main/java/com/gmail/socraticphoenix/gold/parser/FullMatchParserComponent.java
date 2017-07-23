@@ -23,55 +23,53 @@ package com.gmail.socraticphoenix.gold.parser;
 
 import com.gmail.socraticphoenix.gold.ast.Loc;
 import com.gmail.socraticphoenix.gold.ast.Node;
-import com.gmail.socraticphoenix.gold.ast.ValueNode;
 import com.gmail.socraticphoenix.gold.gui.HighLightInformation;
 import com.gmail.socraticphoenix.gold.gui.HighlightFormat;
 import com.gmail.socraticphoenix.gold.gui.HighlightScheme;
 import com.gmail.socraticphoenix.gold.gui.LocRange;
 import com.gmail.socraticphoenix.gold.program.memory.Memory;
-import com.gmail.socraticphoenix.gold.program.value.DataType;
-import com.gmail.socraticphoenix.gold.program.value.DataTypeRegistry;
-import com.gmail.socraticphoenix.gold.program.value.NamedDataType;
 import com.gmail.socraticphoenix.parse.CharacterStream;
 
 import java.awt.Color;
 
-public class DataTypeParserComponent<T extends Memory> implements ParserComponent<T> {
-    private DataType type;
-    private DataTypeRegistry registry;
+public class FullMatchParserComponent<T extends Memory> implements ParserComponent<T> {
+    private ParserComponent<T> component;
 
-    public DataTypeParserComponent(DataType type, DataTypeRegistry registry) {
-        this.type = type;
-        this.registry = registry;
+    public FullMatchParserComponent(ParserComponent<T> component) {
+        this.component = component;
     }
 
     @Override
     public boolean isNext(CharacterStream stream, Loc[] locationMap) {
-        return this.type != null && stream.isNext(this.registry.form(this.type));
+        return this.component.isNext(stream, locationMap);
     }
 
     @Override
     public Node<T> next(CharacterStream stream, Loc[] locationMap) {
-        return new ValueNode<>(locationMap[stream.index()], this.type.read(stream, this.registry));
+        Node<T> nxt = this.component.next(stream, locationMap);
+        if(stream.hasNext()) {
+            throw new GoldParserError("Unrecognized sequence", locationMap[stream.index()]);
+        }
+        return nxt;
     }
 
     @Override
     public void highlight(CharacterStream stream, HighLightInformation information, HighlightScheme scheme, Loc[] locationMap) {
-        if(this.isNext(stream, locationMap)) {
-            Loc left = locationMap[stream.index()];
-            this.next(stream, locationMap);
-            Loc right = locationMap[stream.index()];
+        if(this.component.isNext(stream, locationMap)) {
+            this.component.highlight(stream, information, scheme, locationMap);
+        }
 
-            HighlightFormat format;
-            String name;
-            if(this.type instanceof NamedDataType && scheme.has("value." + this.type.toString())) {
-                name = this.type.toString();
-                format = scheme.getHighlight("value." + this.type.toString());
-            } else {
-                name = null;
-                format = scheme.getHighlight(HighlightScheme.VALUE, new HighlightFormat(null, new Color(109, 234, 59), false, false));
+        if(stream.hasNext()) {
+            Loc left = locationMap[stream.index()];
+            while (stream.hasNext() && !this.component.isNext(stream, locationMap)) {
+                stream.next();
             }
-            information.addHighlight(new LocRange(left, right), format, name);
+            Loc right = locationMap[stream.index()];
+            information.addHighlight(new LocRange(left, right), scheme.getHighlight(HighlightScheme.ERROR, new HighlightFormat(null, new Color(234, 0, 13), true, false)), "Unrecognized sequence");
+
+            if(this.component.isNext(stream, locationMap)) {
+                this.component.highlight(stream, information, scheme, locationMap);
+            }
         }
     }
 

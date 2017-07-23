@@ -19,31 +19,37 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.gmail.socraticphoenix.gold.common.proto.program;
+package com.gmail.socraticphoenix.gold.gui;
 
-import com.gmail.socraticphoenix.gold.program.value.DataType;
-import com.gmail.socraticphoenix.gold.program.value.DataTypeRegistry;
-import com.gmail.socraticphoenix.gold.program.value.MemoryOnlyDataType;
-import com.gmail.socraticphoenix.gold.program.value.NamedDataType;
-import com.gmail.socraticphoenix.gold.program.value.Value;
-import com.gmail.socraticphoenix.parse.CharacterStream;
-import com.gmail.socraticphoenix.parse.parser.PatternRestriction;
-import com.gmail.socraticphoenix.parse.parser.PatternResult;
+import java.awt.Color;
 
-public class ObjectDataType extends NamedDataType implements MemoryOnlyDataType {
+public class HighlightFormat {
+    private Color highlight;
+    private Color text;
+    private boolean bold;
+    private boolean italic;
 
-    public ObjectDataType(String name) {
-        super(name);
+    public HighlightFormat(Color highlight, Color text, boolean bold, boolean italic) {
+        this.highlight = highlight;
+        this.text = text;
+        this.bold = bold;
+        this.italic = italic;
     }
 
-    @Override
-    public boolean canCast(Value value, DataType other, DataTypeRegistry registry) {
-        return false;
+    public Color getHighlight() {
+        return this.highlight;
     }
 
-    @Override
-    public Value cast(Value value, DataType other, DataTypeRegistry registry) {
-        return null;
+    public Color getText() {
+        return this.text;
+    }
+
+    public boolean isBold() {
+        return this.bold;
+    }
+
+    public boolean isItalic() {
+        return this.italic;
     }
 
 }
