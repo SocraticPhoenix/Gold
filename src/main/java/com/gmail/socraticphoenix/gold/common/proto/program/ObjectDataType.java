@@ -32,16 +32,6 @@ import com.gmail.socraticphoenix.parse.parser.PatternResult;
 public class ObjectDataType implements MemoryOnlyDataType {
 
     @Override
-    public PatternRestriction form(DataTypeRegistry registry) {
-        return (s, i, c) -> PatternResult.parseError("ObjectDataType cannot be read", i);
-    }
-
-    @Override
-    public Value read(CharacterStream content, DataTypeRegistry registry) {
-        return null;
-    }
-
-    @Override
     public boolean canCast(Value value, DataType other, DataTypeRegistry registry) {
         return false;
     }

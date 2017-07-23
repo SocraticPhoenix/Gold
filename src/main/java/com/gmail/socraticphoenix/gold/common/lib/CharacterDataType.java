@@ -54,14 +54,4 @@ public class CharacterDataType extends NamedDataType implements SourceOnlyDataTy
         return new Value(CommonDataTypes.STRING, Strings.deEscape(Strings.cutFirst(content.next(form(registry)))));
     }
 
-    @Override
-    public boolean canCast(Value value, DataType other, DataTypeRegistry registry) {
-        return false;
-    }
-
-    @Override
-    public Value cast(Value value, DataType other, DataTypeRegistry registry) {
-        return null;
-    }
-
 }

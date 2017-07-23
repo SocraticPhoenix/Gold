@@ -21,6 +21,18 @@
  */
 package com.gmail.socraticphoenix.gold.program.value;
 
+import com.gmail.socraticphoenix.parse.CharacterStream;
+import com.gmail.socraticphoenix.parse.parser.PatternRestriction;
+import com.gmail.socraticphoenix.parse.parser.PatternResult;
+
 public interface MemoryOnlyDataType extends DataType {
+
+    default PatternRestriction form(DataTypeRegistry registry) {
+        return (s, i, c) -> PatternResult.parseError("MemoryOnlyDataType may not be read", i);
+    }
+
+    default Value read(CharacterStream content, DataTypeRegistry registry) {
+        return null;
+    }
 
 }

@@ -23,4 +23,13 @@ package com.gmail.socraticphoenix.gold.program.value;
 
 public interface SourceOnlyDataType extends DataType {
 
+    default boolean canCast(Value value, DataType other, DataTypeRegistry registry) {
+        return false;
+    }
+
+    default Value cast(Value value, DataType other, DataTypeRegistry registry) {
+        return null;
+    }
+
+
 }
