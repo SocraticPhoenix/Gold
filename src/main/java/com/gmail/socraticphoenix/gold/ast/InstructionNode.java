@@ -23,6 +23,7 @@ package com.gmail.socraticphoenix.gold.ast;
 
 import com.gmail.socraticphoenix.collect.coupling.Switch;
 import com.gmail.socraticphoenix.gold.program.GoldExecutionError;
+import com.gmail.socraticphoenix.gold.program.GoldStateException;
 import com.gmail.socraticphoenix.gold.program.Instruction;
 import com.gmail.socraticphoenix.gold.program.ProgramContext;
 import com.gmail.socraticphoenix.gold.program.argument.Argument;
@@ -51,7 +52,11 @@ public class InstructionNode<T extends Memory> extends AbstractNode<T> implement
                 context.check();
                 this.instruction.exec(get.getA().get(), memory, context);
             } catch (Throwable e) {
-                throw new GoldExecutionError(context.error(this.loc(), "instruction", this.instruction.name()), e);
+                if(e instanceof GoldStateException) {
+                    throw (GoldStateException) e;
+                } else {
+                    throw new GoldExecutionError(context.error(this.loc(), "instruction", this.instruction.name()), e);
+                }
             }
         }
     }

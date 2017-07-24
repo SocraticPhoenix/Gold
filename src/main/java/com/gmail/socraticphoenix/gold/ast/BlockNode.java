@@ -23,6 +23,7 @@ package com.gmail.socraticphoenix.gold.ast;
 
 import com.gmail.socraticphoenix.gold.program.Block;
 import com.gmail.socraticphoenix.gold.program.GoldExecutionError;
+import com.gmail.socraticphoenix.gold.program.GoldStateException;
 import com.gmail.socraticphoenix.gold.program.ProgramContext;
 import com.gmail.socraticphoenix.gold.program.memory.Memory;
 
@@ -54,7 +55,11 @@ public class BlockNode<T extends Memory> extends AbstractNode<T> {
         try {
             this.block.exec(this, memory, context);
         } catch (Throwable e) {
-            throw new GoldExecutionError(context.error(this.loc(), "block", this.block.name()), e);
+            if(e instanceof GoldStateException) {
+                throw (GoldStateException) e;
+            } else {
+                throw new GoldExecutionError(context.error(this.loc(), "block", this.block.name()), e);
+            }
         }
     }
 
