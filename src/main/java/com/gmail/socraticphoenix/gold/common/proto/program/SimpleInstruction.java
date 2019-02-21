@@ -33,8 +33,8 @@ import java.util.Map;
 public class SimpleInstruction<T extends Memory> extends AbstractInstruction<T> {
     private Consumer3<Map<String, Value>, T, ProgramContext<T>> exec;
 
-    public SimpleInstruction(String name, String id, String help, String doc, boolean gensId, List<Argument<T>> arguments, Consumer3<Map<String, Value>, T, ProgramContext<T>> exec) {
-        super(arguments, name, id, help, doc, gensId);
+    public SimpleInstruction(String name, String id, String help, String doc, String op, boolean gensId, List<Argument<T>> arguments, Consumer3<Map<String, Value>, T, ProgramContext<T>> exec) {
+        super(arguments, name, id, help, doc, op, gensId);
         this.exec = exec;
     }
 

@@ -21,18 +21,34 @@
  */
 package com.gmail.socraticphoenix.gold.gui;
 
-import com.gmail.socraticphoenix.collect.coupling.Pair;
+import com.gmail.socraticphoenix.collect.Items;
 import com.gmail.socraticphoenix.collect.coupling.Triple;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
-public class HighLightInformation {
+public class HighlightInformation {
     private List<Triple<LocRange, HighlightFormat, String>> highlights;
+    private Map<LocRange, List<LocRange>> rangeLinks;
+    private Map<LocRange, HighlightFormat> linkStyle;
 
-    public HighLightInformation() {
+    public HighlightInformation() {
         this.highlights = new ArrayList<>();
+        this.rangeLinks = new LinkedHashMap<>();
+        this.linkStyle = new LinkedHashMap<>();
+    }
+
+    public void link(LocRange parent, HighlightFormat format) {
+        this.rangeLinks.computeIfAbsent(parent, Items::buildList);
+        this.linkStyle.put(parent, format);
+    }
+
+    public void link(LocRange parent, LocRange link) {
+        this.rangeLinks.computeIfAbsent(parent, Items::buildList).add(link);
+        this.linkStyle.computeIfAbsent(parent, f -> new HighlightFormat(new Color(117, 193, 190), null, false, false));
     }
 
     public void addHighlight(LocRange range, HighlightFormat format) {
@@ -47,5 +63,12 @@ public class HighLightInformation {
         return this.highlights;
     }
 
+    public Map<LocRange, List<LocRange>> getRangeLinks() {
+        return this.rangeLinks;
+    }
+
+    public Map<LocRange, HighlightFormat> getLinkStyle() {
+        return this.linkStyle;
+    }
 
 }

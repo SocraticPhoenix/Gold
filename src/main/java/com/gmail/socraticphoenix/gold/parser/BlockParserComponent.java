@@ -26,7 +26,7 @@ import com.gmail.socraticphoenix.gold.ast.BlockNode;
 import com.gmail.socraticphoenix.gold.ast.Loc;
 import com.gmail.socraticphoenix.gold.ast.Node;
 import com.gmail.socraticphoenix.gold.ast.SequenceNode;
-import com.gmail.socraticphoenix.gold.gui.HighLightInformation;
+import com.gmail.socraticphoenix.gold.gui.HighlightInformation;
 import com.gmail.socraticphoenix.gold.gui.HighlightFormat;
 import com.gmail.socraticphoenix.gold.gui.HighlightScheme;
 import com.gmail.socraticphoenix.gold.gui.LocRange;
@@ -79,7 +79,7 @@ public class BlockParserComponent<T extends Memory> implements ParserComponent<T
     }
 
     @Override
-    public void highlight(CharacterStream stream, HighLightInformation information, HighlightScheme scheme, Loc[] locationMap) {
+    public void highlight(CharacterStream stream, HighlightInformation information, HighlightScheme scheme, Loc[] locationMap) {
         if(this.isNext(stream, locationMap)) {
             HighlightFormat format;
             if(scheme.has("block." + this.block.name())) {
@@ -92,7 +92,11 @@ public class BlockParserComponent<T extends Memory> implements ParserComponent<T
             String first = this.block.tags().get(0);
             stream.next(first);
             Loc nloc = locationMap[stream.index()];
-            information.addHighlight(new LocRange(loc, nloc), format, this.block.help());
+
+            LocRange firstRange = new LocRange(loc, nloc);
+            information.addHighlight(firstRange, format, this.block.help());
+            information.link(firstRange, scheme.getHighlight(HighlightScheme.LINK, new HighlightFormat(new Color(117, 193, 190), null, false, false)));
+
             this.get(first, locationMap, stream).highlight(stream, information, scheme, locationMap);
             int partition = 1;
             while (partition < this.block.tags().size() - 1) {
@@ -101,7 +105,9 @@ public class BlockParserComponent<T extends Memory> implements ParserComponent<T
                     Loc left = locationMap[stream.index()];
                     stream.next(nxtTag);
                     Loc right = locationMap[stream.index()];
-                    information.addHighlight(new LocRange(left, right), format, this.block.help());
+                    LocRange nxtRange = new LocRange(left, right);
+                    information.addHighlight(nxtRange, format, this.block.help());
+                    information.link(firstRange, nxtRange);
                     partition++;
                     this.get(nxtTag, locationMap, stream).highlight(stream, information, scheme, locationMap);
                 } else if (this.optionalPartitions.contains(nxtTag)) {
@@ -120,7 +126,9 @@ public class BlockParserComponent<T extends Memory> implements ParserComponent<T
                 Loc left = locationMap[stream.index()];
                 stream.next(this.block.tags().get(partition));
                 Loc right = locationMap[stream.index()];
-                information.addHighlight(new LocRange(left, right), format, this.block.help());
+                LocRange nxtRange = new LocRange(left, right);
+                information.addHighlight(nxtRange, format, this.block.help());
+                information.link(firstRange, nxtRange);
             }
         }
     }

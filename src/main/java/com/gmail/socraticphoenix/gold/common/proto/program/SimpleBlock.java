@@ -31,8 +31,8 @@ import java.util.List;
 public class SimpleBlock<T extends Memory> extends AbstractBlock<T> {
     private Consumer3<BlockNode<T>, T, ProgramContext<T>> exec;
 
-    public SimpleBlock(List<String> tags, String name, String help, String doc, Consumer3<BlockNode<T>, T, ProgramContext<T>> exec) {
-        super(tags, name, help, doc);
+    public SimpleBlock(List<String> tags, String name, String help, String doc, String op, Consumer3<BlockNode<T>, T, ProgramContext<T>> exec) {
+        super(tags, name, help, doc, op);
         this.exec = exec;
     }
 

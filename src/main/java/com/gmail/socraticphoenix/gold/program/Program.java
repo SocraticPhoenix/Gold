@@ -27,7 +27,7 @@ import com.gmail.socraticphoenix.gold.program.io.Output;
 import com.gmail.socraticphoenix.gold.program.memory.Memory;
 import com.gmail.socraticphoenix.gold.program.value.DataTypeRegistry;
 import com.gmail.socraticphoenix.gold.program.value.Value;
-import com.gmail.socraticphoenix.inversey.many.Function3;
+import com.gmail.socraticphoenix.inversey.many.Function4;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -40,7 +40,7 @@ public class Program<T extends Memory> {
     private String mainName;
     private InstructionRegistry instructionRegistry;
     private DataTypeRegistry dataTypeRegistry;
-    private Function3<Input, Output, Argument<T>, Value> inputStrategy;
+    private Function4<Input, Output, Argument<T>, ProgramContext<T>, Value> inputStrategy;
 
     public Program(Map<String, Function<T>> functions, String mainName, InstructionRegistry instructionRegistry, DataTypeRegistry dataTypeRegistry) {
         this.functions = functions;
@@ -75,7 +75,7 @@ public class Program<T extends Memory> {
         return this.dataTypeRegistry;
     }
 
-    public void setInputStrategy(Function3<Input, Output, Argument<T>, Value> inputStrategy) {
+    public void setInputStrategy(Function4<Input, Output, Argument<T>, ProgramContext<T>, Value> inputStrategy) {
         this.inputStrategy = inputStrategy;
     }
 

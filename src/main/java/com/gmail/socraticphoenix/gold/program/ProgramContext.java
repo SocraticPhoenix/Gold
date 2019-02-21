@@ -21,21 +21,18 @@
  */
 package com.gmail.socraticphoenix.gold.program;
 
-import com.gmail.socraticphoenix.collect.container.ResettingBoolean;
 import com.gmail.socraticphoenix.gold.ast.Loc;
 import com.gmail.socraticphoenix.gold.ast.Node;
 import com.gmail.socraticphoenix.gold.program.argument.Argument;
 import com.gmail.socraticphoenix.gold.program.io.Input;
 import com.gmail.socraticphoenix.gold.program.io.Output;
 import com.gmail.socraticphoenix.gold.program.memory.Memory;
-import com.gmail.socraticphoenix.gold.program.value.DataTypeRegistry;
 import com.gmail.socraticphoenix.gold.program.value.Value;
-import com.gmail.socraticphoenix.inversey.many.Function3;
+import com.gmail.socraticphoenix.inversey.many.Function4;
 import com.gmail.socraticphoenix.parse.StringFormat;
 
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Function;
 
 public class ProgramContext<T extends Memory> {
     private static StringFormat fmt1 = StringFormat.fromString("Error while executing ${kind} ${name} at (${line}, ${col}): ${error}");
@@ -48,7 +45,7 @@ public class ProgramContext<T extends Memory> {
     private Input input;
     private Output output;
 
-    private Function3<Input, Output, Argument<T>, Value> inputStrategy;
+    private Function4<Input, Output, Argument<T>, ProgramContext<T>, Value> inputStrategy;
 
     private AtomicBoolean debug;
     private boolean debugActive;
@@ -63,10 +60,10 @@ public class ProgramContext<T extends Memory> {
         this.program = program;
         this.debug = new AtomicBoolean(true);
         this.debugActive = debugMode;
-        this.inputStrategy = (inpt, outpt, argument) -> {
+        this.inputStrategy = (inpt, outpt, argument, ctx) -> {
             Value value;
             do {
-                this.output.publish("Enter a value> ");
+                this.output.publish("> ");
                 while (!this.input.has()) {
                     this.check();
                 }
@@ -148,11 +145,11 @@ public class ProgramContext<T extends Memory> {
         return fmt2.filler().var("name", name).var("kind", kind).var("line", location.getRow()).var("col", location.getCol()).fill();
     }
 
-    public Value input(Argument argument) {
-        return this.inputStrategy.invoke(this.input, this.output, argument);
+    public Value input(Argument<T> argument) {
+        return this.inputStrategy.invoke(this.input, this.output, argument, this);
     }
 
-    public void setInputStrategy(Function3<Input, Output, Argument<T>, Value> inputStrategy) {
+    public void setInputStrategy(Function4<Input, Output, Argument<T>, ProgramContext<T>, Value> inputStrategy) {
         this.inputStrategy = inputStrategy;
     }
 

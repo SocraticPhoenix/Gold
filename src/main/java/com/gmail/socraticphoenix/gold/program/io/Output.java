@@ -31,4 +31,8 @@ public interface Output extends Closeable {
         publish(info + System.lineSeparator());
     }
 
+    default void publishln() {
+        publish(System.lineSeparator());
+    }
+
 }

@@ -38,4 +38,6 @@ public interface Block<T extends Memory> extends ProgramUnit<T> {
 
     String doc();
 
+    String op();
+
 }

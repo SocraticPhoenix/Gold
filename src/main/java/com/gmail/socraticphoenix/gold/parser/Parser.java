@@ -25,12 +25,10 @@ import com.gmail.socraticphoenix.collect.Items;
 import com.gmail.socraticphoenix.gold.ast.Loc;
 import com.gmail.socraticphoenix.gold.ast.Node;
 import com.gmail.socraticphoenix.gold.ast.SequenceNode;
-import com.gmail.socraticphoenix.gold.gui.HighLightInformation;
+import com.gmail.socraticphoenix.gold.gui.HighlightInformation;
 import com.gmail.socraticphoenix.gold.gui.HighlightFormat;
 import com.gmail.socraticphoenix.gold.gui.HighlightScheme;
 import com.gmail.socraticphoenix.gold.gui.LocRange;
-import com.gmail.socraticphoenix.gold.program.Function;
-import com.gmail.socraticphoenix.gold.program.Program;
 import com.gmail.socraticphoenix.gold.program.memory.Memory;
 import com.gmail.socraticphoenix.parse.CharacterStream;
 
@@ -65,8 +63,8 @@ public class Parser<T extends Memory> {
         return nodes;
     }
 
-    public HighLightInformation highlight(String str, HighlightScheme scheme) {
-        HighLightInformation information = new HighLightInformation();
+    public HighlightInformation highlight(String str, HighlightScheme scheme) {
+        HighlightInformation information = new HighlightInformation();
 
         str = clean(str);
         Loc[] locMap = buildLocMap(str);

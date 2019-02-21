@@ -42,19 +42,19 @@ import java.util.Map;
 public interface CommonInstructions {
 
     static <T extends VariableMemory> Instruction<T> setVariable(String varName, boolean gensId) {
-        return new SimpleInstruction<>("set[" + varName + "]", "set[" + varName + "]", "Sets " + varName, "Retrieves the first available value from memory and sets the variable " + varName + " to it.", gensId, Items.buildList(Argument.named("arg")), (args, mem, context) -> {
+        return new SimpleInstruction<>("set[" + varName + "]", "set[" + varName + "]", "Sets " + varName, "Retrieves the first available value from memory and sets the variable " + varName + " to it.", "set " + varName + " = ${arg}", gensId, Items.buildList(Argument.named("arg")), (args, mem, context) -> {
             mem.set(varName, args.get("arg"));
         });
     }
 
     static <T extends VariableMemory> Instruction<T> getVariable(String varName, boolean gensId) {
-        return new SimpleInstruction<>("get[" + varName + "]", "get[" + varName + "]", "Gets " + varName, "Gets the variable " + varName + " and offers it to memory.", gensId, Argument.empty(), (args, mem, context) -> {
+        return new SimpleInstruction<>("get[" + varName + "]", "get[" + varName + "]", "Gets " + varName, "Gets the variable " + varName + " and offers it to memory.", "get " + varName, gensId, Argument.empty(), (args, mem, context) -> {
             mem.offer(mem.get(varName));
         });
     }
 
     static <T extends Memory> Instruction<T> callFunction(String funcName, boolean gensId) {
-        return new SimpleInstruction<>("call[" + funcName + "]", "call[" + funcName + "]", "Calls " + funcName, "Calls the function " + funcName + ".", gensId, Argument.empty(), (args, mem, context) -> {
+        return new SimpleInstruction<>("call[" + funcName + "]", "call[" + funcName + "]", "Calls " + funcName, "Calls the function " + funcName + ".", "call " + funcName, gensId, Argument.empty(), (args, mem, context) -> {
             Function<T> func = context.getProgram().getFunctions().get(funcName);
             if (func == null) {
                 throw new GoldExecutionError("Unknown function: " + funcName);
@@ -64,24 +64,24 @@ public interface CommonInstructions {
         });
     }
 
-    static <T extends Memory> Instruction<T> of(String name, String help, String doc, String id, List<Argument<T>> arguments, Consumer3<Map<String, Value>, T, ProgramContext<T>> action) {
-        return new SimpleInstruction<>(name, id, help, doc, true, arguments, action);
+    static <T extends Memory> Instruction<T> of(String name, String help, String doc, String id, String op, List<Argument<T>> arguments, Consumer3<Map<String, Value>, T, ProgramContext<T>> action) {
+        return new SimpleInstruction<>(name, id, help, doc, op, true, arguments, action);
     }
 
-    static <T extends Memory> Block<T> of(String name, String help, String doc, List<String> tags, Consumer3<BlockNode<T>, T, ProgramContext<T>> action) {
-        return new SimpleBlock<>(tags, name, help, doc, action);
+    static <T extends Memory> Block<T> of(String name, String help, String doc, String op, List<String> tags, Consumer3<BlockNode<T>, T, ProgramContext<T>> action) {
+        return new SimpleBlock<>(tags, name, help, op, doc, action);
     }
 
-    static <T extends Memory> Block<T> conditional(String name, String help, String doc, List<String> tags, Function3<BlockNode<T>, T, ProgramContext<T>, Boolean> condition, Consumer3<BlockNode<T>, T, ProgramContext<T>> action) {
-        return new SimpleBlock<>(tags, name, help, doc, (nd, mem, context) -> {
+    static <T extends Memory> Block<T> conditional(String name, String help, String doc, String op, List<String> tags, Function3<BlockNode<T>, T, ProgramContext<T>, Boolean> condition, Consumer3<BlockNode<T>, T, ProgramContext<T>> action) {
+        return new SimpleBlock<>(tags, name, help, doc, op, (nd, mem, context) -> {
             if (condition.invoke(nd, mem, context)) {
                 action.call(nd, mem, context);
             }
         });
     }
 
-    static <T extends Memory> Block<T> whileLoop(String name, String help, String doc, List<String> tags, Function3<BlockNode<T>, T, ProgramContext<T>, Boolean> condition, Consumer3<BlockNode<T>, T, ProgramContext<T>> action) {
-        return new SimpleBlock<>(tags, name, help, doc, (nd, mem, context) -> {
+    static <T extends Memory> Block<T> whileLoop(String name, String help, String doc, String op, List<String> tags, Function3<BlockNode<T>, T, ProgramContext<T>, Boolean> condition, Consumer3<BlockNode<T>, T, ProgramContext<T>> action) {
+        return new SimpleBlock<>(tags, name, help, doc, op, (nd, mem, context) -> {
             while (condition.invoke(nd, mem, context)) {
                 action.call(nd, mem, context);
                 context.check();
@@ -89,8 +89,8 @@ public interface CommonInstructions {
         });
     }
 
-    static <T extends Memory> Block<T> doWhileLoop(String name, String help, String doc, List<String> tags, Function3<BlockNode<T>, T, ProgramContext<T>, Boolean> condition, Consumer3<BlockNode<T>, T, ProgramContext<T>> action) {
-        return new SimpleBlock<>(tags, name, help, doc, (nd, mem, context) -> {
+    static <T extends Memory> Block<T> doWhileLoop(String name, String help, String doc, String op, List<String> tags, Function3<BlockNode<T>, T, ProgramContext<T>, Boolean> condition, Consumer3<BlockNode<T>, T, ProgramContext<T>> action) {
+        return new SimpleBlock<>(tags, name, help, doc, op, (nd, mem, context) -> {
             do {
                 action.call(nd, mem, context);
                 context.check();
@@ -98,8 +98,8 @@ public interface CommonInstructions {
         });
     }
 
-    static <T extends Memory> Block<T> iterativeLoop(String name, String help, String doc, List<String> tags, Function3<BlockNode<T>, T, ProgramContext<T>, ValueList> iterable, Consumer3<BlockNode<T>, T, ProgramContext<T>> action) {
-        return new SimpleBlock<>(tags, name, help, doc, (nd, mem, context) -> {
+    static <T extends Memory> Block<T> iterativeLoop(String name, String help, String doc, String op, List<String> tags, Function3<BlockNode<T>, T, ProgramContext<T>, ValueList> iterable, Consumer3<BlockNode<T>, T, ProgramContext<T>> action) {
+        return new SimpleBlock<>(tags, name, help, doc, op, (nd, mem, context) -> {
             ValueList iter = iterable.invoke(nd, mem, context);
             for(Value v : iter) {
                 mem.offer(v);

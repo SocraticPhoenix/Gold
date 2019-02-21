@@ -21,45 +21,46 @@
  */
 package com.gmail.socraticphoenix.gold.parser;
 
+import com.gmail.socraticphoenix.collect.Items;
 import com.gmail.socraticphoenix.gold.ast.Loc;
 import com.gmail.socraticphoenix.gold.ast.Node;
+import com.gmail.socraticphoenix.gold.ast.SequenceNode;
+import com.gmail.socraticphoenix.gold.gui.HighlightFormat;
 import com.gmail.socraticphoenix.gold.gui.HighlightInformation;
 import com.gmail.socraticphoenix.gold.gui.HighlightScheme;
+import com.gmail.socraticphoenix.gold.gui.LocRange;
 import com.gmail.socraticphoenix.gold.program.memory.Memory;
 import com.gmail.socraticphoenix.parse.CharacterStream;
 
-public class LazyParserComponent<T extends Memory> implements ParserComponent<T> {
-    private ParserComponent<T> component;
+import java.awt.Color;
+import java.util.function.Predicate;
 
-    public LazyParserComponent() {
-        this.component = null;
-    }
+public class SkippingParserComponent<T extends Memory> implements ParserComponent<T> {
+    private Predicate<Character> ignore;
 
-    public void set(ParserComponent<T> component) {
-        this.component = component;
+    public SkippingParserComponent(Predicate<Character> ignore) {
+        this.ignore = ignore;
     }
 
     @Override
     public boolean isNext(CharacterStream stream, Loc[] locationMap) {
-        if(this.component == null) {
-            throw new GoldParserError("Uninitialized LazyParserComponent", locationMap[stream.index()]);
-        } else {
-            return this.component.isNext(stream, locationMap);
-        }
+        return stream.isNext(this.ignore);
     }
 
     @Override
     public Node<T> next(CharacterStream stream, Loc[] locationMap) {
-        if(this.component == null) {
-            throw new GoldParserError("Uninitialized LazyParserComponent", locationMap[stream.index()]);
-        } else {
-            return this.component.next(stream, locationMap);
-        }
+        int index = stream.index();
+        stream.consumeAll(this.ignore);
+        return new SequenceNode<>(locationMap[index], Items.buildList());
     }
 
     @Override
     public void highlight(CharacterStream stream, HighlightInformation information, HighlightScheme scheme, Loc[] locationMap) {
-        this.component.highlight(stream, information, scheme, locationMap);
+        Loc left = locationMap[stream.index()];
+        stream.consumeAll(this.ignore);
+        Loc right = locationMap[stream.index()];
+        LocRange range = new LocRange(left, right);
+        information.addHighlight(range, scheme.getHighlight(HighlightScheme.IGNORE, new HighlightFormat(null, new Color(112, 112, 112), false, true)));
     }
 
 }

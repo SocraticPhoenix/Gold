@@ -23,6 +23,8 @@ package com.gmail.socraticphoenix.gold.gui;
 
 import com.gmail.socraticphoenix.gold.ast.Loc;
 
+import java.util.Objects;
+
 public class LocRange {
     private Loc start;
     private Loc end;
@@ -30,6 +32,10 @@ public class LocRange {
     public LocRange(Loc start, Loc end) {
         this.start = start;
         this.end = end;
+    }
+
+    public int len() {
+        return this.end.getIndex() - this.start.getIndex();
     }
 
     public Loc getStart() {
@@ -46,6 +52,32 @@ public class LocRange {
 
     public void setEnd(Loc end) {
         this.end = end;
+    }
+
+    public boolean contains(Loc loc) {
+        return this.contains(loc.getIndex());
+    }
+
+    public boolean contains(int index) {
+        return this.start.getIndex() <= index && index < this.end.getIndex();
+    }
+
+    public boolean inclusiveContains(int index) {
+        return this.start.getIndex() <= index && index <= this.end.getIndex();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof LocRange)) return false;
+        LocRange locRange = (LocRange) o;
+        return Objects.equals(start, locRange.start) &&
+                Objects.equals(end, locRange.end);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(start, end);
     }
 
 }

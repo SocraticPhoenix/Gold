@@ -19,51 +19,39 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.gmail.socraticphoenix.gold.common.proto.program;
+package com.gmail.socraticphoenix.gold.gui;
 
-import com.gmail.socraticphoenix.gold.program.Block;
-import com.gmail.socraticphoenix.gold.program.memory.Memory;
+import javax.swing.JFrame;
 
-import java.util.List;
-
-public abstract class AbstractBlock<T extends Memory> implements Block<T> {
-    private List<String> tags;
+public class DisplayableGui {
     private String name;
-    private String help;
-    private String doc;
-    private String op;
+    private GUI root;
+    private int width;
+    private int height;
 
-    public AbstractBlock(List<String> tags, String name, String help, String doc, String op) {
-        this.tags = tags;
-        this.help = help;
-        this.doc = doc;
+    private JFrame frame;
+
+    public DisplayableGui(String name, GUI root, int width, int height) {
         this.name = name;
-        this.op = op;
+        this.root = root;
+        this.width = width;
+        this.height = height;
     }
 
-    @Override
-    public String op() {
-        return this.op;
+    public JFrame display() {
+        JFrame frame = this.getFrame();
+        frame.setVisible(true);
+        return frame;
     }
 
-    @Override
-    public List<String> tags() {
-        return this.tags;
-    }
-
-    @Override
-    public String name() {
-        return this.name;
-    }
-
-    @Override
-    public String help() {
-        return this.help;
-    }
-
-    @Override
-    public String doc() {
-        return this.doc;
+    public JFrame getFrame() {
+        if(this.frame == null) {
+            this.frame = new JFrame(name);
+            this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            this.frame.setSize(this.width, this.height);
+            this.root.addTo(this.frame);
+        }
+        return this.frame;
     }
 
 }

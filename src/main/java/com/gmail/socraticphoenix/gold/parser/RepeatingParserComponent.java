@@ -24,7 +24,7 @@ package com.gmail.socraticphoenix.gold.parser;
 import com.gmail.socraticphoenix.gold.ast.Loc;
 import com.gmail.socraticphoenix.gold.ast.Node;
 import com.gmail.socraticphoenix.gold.ast.SequenceNode;
-import com.gmail.socraticphoenix.gold.gui.HighLightInformation;
+import com.gmail.socraticphoenix.gold.gui.HighlightInformation;
 import com.gmail.socraticphoenix.gold.gui.HighlightScheme;
 import com.gmail.socraticphoenix.gold.program.memory.Memory;
 import com.gmail.socraticphoenix.parse.CharacterStream;
@@ -55,7 +55,7 @@ public class RepeatingParserComponent<T extends Memory> implements ParserCompone
     }
 
     @Override
-    public void highlight(CharacterStream stream, HighLightInformation information, HighlightScheme scheme, Loc[] locationMap) {
+    public void highlight(CharacterStream stream, HighlightInformation information, HighlightScheme scheme, Loc[] locationMap) {
         while (this.component.isNext(stream, locationMap)) {
             this.component.highlight(stream, information, scheme, locationMap);
         }

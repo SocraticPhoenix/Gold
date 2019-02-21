@@ -23,7 +23,6 @@ package com.gmail.socraticphoenix.gold.common.proto.program.io;
 
 import com.gmail.socraticphoenix.gold.program.io.Input;
 
-import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.Queue;
 
@@ -45,7 +44,7 @@ public class OfferedInput implements Input {
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() {
         this.input.clear();
     }
 

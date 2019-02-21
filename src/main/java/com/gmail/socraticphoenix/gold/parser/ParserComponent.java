@@ -23,7 +23,7 @@ package com.gmail.socraticphoenix.gold.parser;
 
 import com.gmail.socraticphoenix.gold.ast.Loc;
 import com.gmail.socraticphoenix.gold.ast.Node;
-import com.gmail.socraticphoenix.gold.gui.HighLightInformation;
+import com.gmail.socraticphoenix.gold.gui.HighlightInformation;
 import com.gmail.socraticphoenix.gold.gui.HighlightScheme;
 import com.gmail.socraticphoenix.gold.program.memory.Memory;
 import com.gmail.socraticphoenix.parse.CharacterStream;
@@ -36,7 +36,7 @@ public interface ParserComponent<T extends Memory> {
 
     Node<T> next(CharacterStream stream, Loc[] locationMap);
 
-    void highlight(CharacterStream stream, HighLightInformation information, HighlightScheme scheme, Loc[] locationMap);
+    void highlight(CharacterStream stream, HighlightInformation information, HighlightScheme scheme, Loc[] locationMap);
 
     default ParserComponent<T> ignoring(Predicate<Character> ignore) {
         return new IgnoringParserComponent<>(ignore, this);

@@ -21,6 +21,8 @@
  */
 package com.gmail.socraticphoenix.gold.ast;
 
+import java.util.Objects;
+
 public class Loc {
     private int col;
     private int row;
@@ -46,6 +48,21 @@ public class Loc {
 
     public String toString() {
         return "line " + this.row + ", column " + this.col;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Loc)) return false;
+        Loc loc = (Loc) o;
+        return col == loc.col &&
+                row == loc.row &&
+                index == loc.index;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(col, row, index);
     }
 
 }

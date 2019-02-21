@@ -21,7 +21,6 @@
  */
 package com.gmail.socraticphoenix.gold.gui;
 
-import java.awt.Color;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -29,8 +28,9 @@ public class HighlightScheme {
     public static final String INSTRUCTION = "highlight.instruction";
     public static final String BLOCK = "highlight.block";
     public static final String VALUE = "highlight.value";
-    public static final String NORMAL = "highlight.normal";
+    public static final String LINK = "highlight.link";
     public static final String ERROR = "highlight.normal";
+    public static final String IGNORE = "highlight.ignore";
 
     private Map<String, HighlightFormat> highlights;
 

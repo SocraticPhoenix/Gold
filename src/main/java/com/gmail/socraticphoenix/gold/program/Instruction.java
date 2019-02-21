@@ -42,6 +42,8 @@ public interface Instruction<T extends Memory> extends ProgramUnit<T> {
 
     String doc();
 
+    String op();
+
     void setId(String id);
 
     boolean gensId();

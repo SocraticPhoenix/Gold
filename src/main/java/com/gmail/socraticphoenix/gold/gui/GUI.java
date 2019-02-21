@@ -19,51 +19,12 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.gmail.socraticphoenix.gold.common.proto.program;
+package com.gmail.socraticphoenix.gold.gui;
 
-import com.gmail.socraticphoenix.gold.program.Block;
-import com.gmail.socraticphoenix.gold.program.memory.Memory;
+import javax.swing.JFrame;
 
-import java.util.List;
+public interface GUI {
 
-public abstract class AbstractBlock<T extends Memory> implements Block<T> {
-    private List<String> tags;
-    private String name;
-    private String help;
-    private String doc;
-    private String op;
-
-    public AbstractBlock(List<String> tags, String name, String help, String doc, String op) {
-        this.tags = tags;
-        this.help = help;
-        this.doc = doc;
-        this.name = name;
-        this.op = op;
-    }
-
-    @Override
-    public String op() {
-        return this.op;
-    }
-
-    @Override
-    public List<String> tags() {
-        return this.tags;
-    }
-
-    @Override
-    public String name() {
-        return this.name;
-    }
-
-    @Override
-    public String help() {
-        return this.help;
-    }
-
-    @Override
-    public String doc() {
-        return this.doc;
-    }
+    void addTo(JFrame frame);
 
 }

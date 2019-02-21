@@ -33,15 +33,22 @@ public abstract class AbstractInstruction<T extends Memory> implements Instructi
     private String id;
     private String help;
     private String doc;
+    private String op;
     private boolean gensId;
 
-    public AbstractInstruction(List<Argument<T>> arguments, String name, String id, String help, String doc, boolean gensId) {
+    public AbstractInstruction(List<Argument<T>> arguments, String name, String id, String help, String doc, String op, boolean gensId) {
         this.arguments = arguments;
         this.name = name;
         this.id = id;
         this.help = help;
         this.doc = doc;
+        this.op = op;
         this.gensId = gensId;
+    }
+
+    @Override
+    public String op() {
+        return this.op;
     }
 
     @Override

@@ -19,51 +19,48 @@
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.gmail.socraticphoenix.gold.common.proto.program;
+package com.gmail.socraticphoenix.gold.common.proto.program.io;
 
-import com.gmail.socraticphoenix.gold.program.Block;
-import com.gmail.socraticphoenix.gold.program.memory.Memory;
+import com.gmail.socraticphoenix.gold.program.io.Input;
 
-import java.util.List;
+import java.io.IOException;
+import java.util.Stack;
 
-public abstract class AbstractBlock<T extends Memory> implements Block<T> {
-    private List<String> tags;
-    private String name;
-    private String help;
-    private String doc;
-    private String op;
+public class DelegateCharacterInput implements Input {
+    private Input delegate;
+    private Stack<Integer> characters;
 
-    public AbstractBlock(List<String> tags, String name, String help, String doc, String op) {
-        this.tags = tags;
-        this.help = help;
-        this.doc = doc;
-        this.name = name;
-        this.op = op;
+    public DelegateCharacterInput(Input delegate) {
+        this.delegate = delegate;
+        this.characters = new Stack<>();
     }
 
     @Override
-    public String op() {
-        return this.op;
+    public boolean has() {
+        return !this.characters.isEmpty() || this.delegate.has();
     }
 
     @Override
-    public List<String> tags() {
-        return this.tags;
+    public String get() {
+        if (!this.characters.isEmpty()) {
+            return new String(new int[]{this.characters.pop()}, 0, 1);
+        } else {
+            String next = this.delegate.get();
+            if (next.isEmpty()) {
+                next = "\0";
+            }
+            int[] pts = next.codePoints().toArray();
+            for (int i = pts.length - 1; i >= 0; i--) {
+                this.characters.push(pts[i]);
+            }
+
+            return new String(new int[]{this.characters.pop()}, 0, 1);
+        }
     }
 
     @Override
-    public String name() {
-        return this.name;
-    }
-
-    @Override
-    public String help() {
-        return this.help;
-    }
-
-    @Override
-    public String doc() {
-        return this.doc;
+    public void close() throws IOException {
+        this.delegate.close();
     }
 
 }

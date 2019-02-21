@@ -23,7 +23,7 @@ package com.gmail.socraticphoenix.gold.parser;
 
 import com.gmail.socraticphoenix.gold.ast.Loc;
 import com.gmail.socraticphoenix.gold.ast.Node;
-import com.gmail.socraticphoenix.gold.gui.HighLightInformation;
+import com.gmail.socraticphoenix.gold.gui.HighlightInformation;
 import com.gmail.socraticphoenix.gold.gui.HighlightFormat;
 import com.gmail.socraticphoenix.gold.gui.HighlightScheme;
 import com.gmail.socraticphoenix.gold.gui.LocRange;
@@ -57,7 +57,7 @@ public class ChoosingParserComponent<T extends Memory> implements ParserComponen
     }
 
     @Override
-    public void highlight(CharacterStream stream, HighLightInformation information, HighlightScheme scheme, Loc[] locationMap) {
+    public void highlight(CharacterStream stream, HighlightInformation information, HighlightScheme scheme, Loc[] locationMap) {
         if (this.isNext(stream, locationMap)) {
             for (ParserComponent<T> choice : this.choices) {
                 if (choice.isNext(stream, locationMap)) {
