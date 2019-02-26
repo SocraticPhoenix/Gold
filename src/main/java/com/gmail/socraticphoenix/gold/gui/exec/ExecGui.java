@@ -253,4 +253,5 @@ public class ExecGui<T extends Memory> implements GUI {
     public JComponent $$$getRootComponent$$$() {
         return panel1;
     }
+
 }
